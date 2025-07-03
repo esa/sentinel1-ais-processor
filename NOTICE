@@ -1,0 +1,26 @@
+NOTICE
+
+Copyright 2025 European Space Agency
+
+This software is licensed under the Apache License, Version 2.0.
+
+This software includes an implementation of an AIS processing algorithm covered by the following patent:
+
+    "RECEIVING METHOD AND RECEIVER FOR TIMING AND FREQUENCY OFFSET CORRECTION OF CONTINUOUS PHASE DEMODULATION IN SATELLITE-BASED AUTOMATIC IDENTIFICATION SYSTEM"
+    EU Patent No. EP3063913B1
+    Proprietor: Esa European Space Agency, 75738 Paris Cedex 15 (FR)
+    Inventors:
+	- COLAVOLPE, Giulio 
+	  I-43124 Parma (IT)
+	- UGOLINI, Alessandro
+	  I-43036 Fidenza (IT)
+	- FOGGI, Tommaso
+          I-43121 Parma (IT)
+	- LIZARRAGA, Juan
+	  NL-2312 SL Leiden (NL)
+	- GINESI, Alberto
+	  NL-1075GX Amsterdam (NL)
+	- CIONI, Stefano
+	  NL-2181 SR Hillegom (NL)
+    
+    Granted on 22 July 2020

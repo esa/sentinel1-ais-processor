@@ -1,0 +1,6 @@
+bitarray==2.9.2
+numpy==2.3.1
+pandas==2.3.0
+pyais==2.6.5
+scipy==1.16.0
+shapely==2.0.4
