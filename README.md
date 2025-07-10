@@ -39,7 +39,7 @@ The source code implementing the ESA-patented AIS algorithm is located in the di
 ```
 make
 ```
-This will generate the _AIS_receiver_ executable used by the Python script. Note: To run the executable within the Sentinel-1 AIS end-to-end processor (_process_s1_ais_raw.py_), the executable must be located in the main directory. The executable is currently only compiled for macOS and Linux. 
+This will generate the _AIS_receiver_ executable used by the Python script. Note: To run the executable within the Sentinel-1 AIS end-to-end processor (_process_s1_ais_raw.py_), the executable must be located in the main directory. 
 
 
 ## Standalone Execution:

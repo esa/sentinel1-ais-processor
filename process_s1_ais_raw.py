@@ -62,8 +62,7 @@ def process_channel(args):
     filename_out = os.path.join(output_dir, f"{wav_name}.txt")
     
     if platform.system() == "Windows":
-        raise RuntimeError("Unsupported OS")
-        #esa_ais_executable = "AIS_receiver.exe"
+        esa_ais_executable = "AIS_receiver_win.exe"
     elif platform.system() == "Linux":
         esa_ais_executable = './AIS_receiver_linux'
         
