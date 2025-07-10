@@ -238,7 +238,7 @@ int main(int argc, char **argv)
 	fclose(fd);
 
 	// open transmitted signal file
-	fd = fopen(argv[3], "r");
+	fd = fopen(argv[3], "rb");
 	if (fd == NULL)
 	{
 		printf("%s doesn't exist\n", argv[3]);
