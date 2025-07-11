@@ -135,12 +135,6 @@ int main(int argc, char **argv)
 	int iteration_nr = 0;
 	double sample_time = 0;
 
-	// WAV reading
-	WavHeader header;
-	int16_t buffer1[overlap * 2];
-	int nr_samples_wav = nr_samples * 2; // 2*nr_samples since the Wav file is two channel interleaved.
-	int16_t buffer[nr_samples_wav];
-
 	// Check inputs
 	if (argc < 3)
 	{
@@ -245,20 +239,13 @@ int main(int argc, char **argv)
 		exit(0);
 	}
 
-	// Read the WAV file header
-	fread(&header, sizeof(WavHeader), 1, fd);
-	// Check number of channels
-	if (header.numChannels != 2)
-	{
-		printf("The WAV file must be two channels.\n");
-		fclose(fd);
-		return 1;
-	}
 	// Initialize datain
-	fread(buffer1, overlap * 2, header.numChannels, fd);
+	float real, imag;
 	for (i = 0; i < overlap; i++)
 	{
-		datain[i] = buffer1[i * header.numChannels] + I * buffer1[i * header.numChannels + 1];
+		if (fscanf(fd, "%f,%f", &real, &imag) != 2)
+			break;
+		datain[i] = real + I * imag;
 	}
 
 	// File to save correctly decoded bits
@@ -270,11 +257,21 @@ int main(int argc, char **argv)
 	}
 
 	clock_t begin = clock();
-	while (fread(buffer, nr_samples_wav, header.numChannels, fd) == 2)
+	while (1)
 	{
 		for (i = 0; i < nr_samples; i++)
 		{
-			datain[i + overlap] = buffer[i * header.numChannels] + I * buffer[i * header.numChannels + 1];
+			if (fscanf(fd, "%f,%f", &real, &imag) != 2)
+			{
+				break; // EOF or malformed line
+			}
+			datain[i + overlap] = real + I * imag;
+		}
+
+		int samples_read = i;
+		if (samples_read == 0)
+		{
+			break; // No new data left
 		}
 
 		// Attempt demodulation of AIS message for each zonal section
