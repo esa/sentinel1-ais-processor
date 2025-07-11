@@ -304,7 +304,7 @@ def extract_isp_data(sInputDir, filename, sOutputDir, isp_idx = None):
     #np.save(os.path.join(sOutputDir, 'timestamp.npy'), {'head_time_stamp': head_time_stamp})
     np.savetxt(os.path.join(sOutputDir, 'AIFM_timestamps.txt'), head_time_stamp)
 
-def extract_isp2asc(sInputDir, filename, sOutputDir):
+def extract_isp2asc(sInputDir, filename, sOutputDir, isp_idx = None):
     """
     Main function to extract the AIS Instrument Source Packets (ISPs).
     Outputs: 
@@ -316,8 +316,14 @@ def extract_isp2asc(sInputDir, filename, sOutputDir):
         - filename: Filename for binary ISP (.dat or .bin)
         - sOutputDir: Output directory to save the files in.
     """
+
+    if isp_idx is None:
+        isp_idx = [0, int(1E10)]
+    elif len(isp_idx) != 2:
+        raise ValueError('ISP_IDX length must be 2')
+    
     head_ccsds, head_time_stamp, head_pri, head_sec, ais_ch0_pol_H, ais_ch0_pol_V, ais_ch1_pol_H, ais_ch1_pol_V, ais_ch2_pol_H, ais_ch2_pol_V, \
-    ais_ch3_pol_H, ais_ch3_pol_V = s1_read_ais_bin(os.path.join(sInputDir, filename), [1, 48498])
+    ais_ch3_pol_H, ais_ch3_pol_V = s1_read_ais_bin(os.path.join(sInputDir, filename), isp_idx)
     
     # Generate linear polarization combinations for improved detection
     ais_ch0_pol_HV = ais_ch0_pol_H + ais_ch0_pol_V

@@ -1,0 +1,2 @@
+File name: /Users/stefan.graham/Library/CloudStorage/OneDrive-ESA/Dokumenter/IOC_Processing/Code/sentinel1-ais-processor/Testcase/S1C_AI_RAW__0____20220531T155630_20220531T155744_000016________2D48.SAFE/s1c-ai-raw-20220531t155630_20220531t155744-000016.dat
+Total time for parallel demodulation: 160.18 seconds

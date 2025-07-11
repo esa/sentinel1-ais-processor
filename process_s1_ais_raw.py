@@ -49,7 +49,7 @@ sys.path.append(os.path.join(os.getcwd(), 'src'))
 
 # Import custom packages from src
 from parse_ais import decode_binary_ais_messages, merge_ais_channels, generate_file_name, add_quality_flag
-from isp_extraction import extract_isp_data
+from isp_extraction import extract_isp2asc
 
     
     
@@ -58,7 +58,7 @@ def process_channel(args):
     
     # process_channel calls the ESA AIS demodulation C-executable with input .wav files
     k, input_dir, output_dir, wav_name = args
-    filename_in = os.path.join(input_dir, f"{wav_name}.wav")
+    filename_in = os.path.join(input_dir, f"{wav_name}.asc")
     filename_out = os.path.join(output_dir, f"{wav_name}.txt")
     
     if platform.system() == "Windows":
@@ -103,7 +103,7 @@ def demodulate_all_ais_channels(sInputDir, sOutputDir):
     mainfest_l0 =   os.path.join(sInputDir, 'manifest.safe')
 
     # Extract the Instrument Source Packets (ISPs) into .wav files for further processing
-    extract_isp_data(sInputDir, filename, sOutputDir, isp_idx = [0,10E10])
+    extract_isp2asc(sInputDir, filename, sOutputDir, isp_idx = [0,10E10])
     
     # ESA AIS Demodulation
     fieldnames = ["ais_ch0_pol_H", "ais_ch0_pol_V", "ais_ch0_pol_HV", "ais_ch0_pol_HmV",
@@ -112,7 +112,7 @@ def demodulate_all_ais_channels(sInputDir, sOutputDir):
                   "ais_ch3_pol_H", "ais_ch3_pol_V", "ais_ch3_pol_HV", "ais_ch3_pol_HmV"]
     
     
-    # Define the directory where to load the .wav files to the ESA demodulator.
+    # Define the directory where to load the .asc files to the ESA demodulator.
     # In this case it is the output directory from previous step where the .wav files have been saved.
     sInputDir = sOutputDir
     
