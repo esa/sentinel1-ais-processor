@@ -466,3 +466,56 @@ def s1_read_ais_bin(path_bin, isp_idx=None):
         print('Possible reading error. Application Process Identifier (APID) is not equal to 0x007')
 
     return head_ccsds, head_time_dec, head_pri, head_sec, ais_ch0_pol_H, ais_ch0_pol_V, ais_ch1_pol_H, ais_ch1_pol_V, ais_ch2_pol_H, ais_ch2_pol_V, ais_ch3_pol_H, ais_ch3_pol_V
+
+if __name__ == '__main__':
+    
+    path_bin = '/Users/stefan.graham/Library/CloudStorage/OneDrive-ESA/Dokumenter/IOC_Processing/Code/sentinel1-ais-processor/Testcase/S1C_AI_RAW__0____20220531T155630_20220531T155744_000016________2D48.SAFE/s1c-ai-raw-20220531t155630_20220531t155744-000016.dat'
+    
+    isp_idx=None
+    if isp_idx is None:
+        isp_idx = [0, int(1E10)]
+    elif len(isp_idx) != 2:
+        raise ValueError('ISP_IDX length must be 2')
+
+    # read binary streams
+    head_ccsds_bin, head_time_stamp_bin, head_pri_bin, head_sec_bin, user_data_bin = read_bin_ais(path_bin, isp_idx)
+
+    # parse headers
+    head_ccsds, head_time_stamp, head_pri, head_sec = parse_bin_ais_headers(head_ccsds_bin, head_time_stamp_bin, head_pri_bin, head_sec_bin)
+
+    # Clean useless fieldnames
+    head_time_stamp_fnames = list(head_time_stamp.keys())
+    for fname in head_time_stamp_fnames:
+        if 'spare' in fname:
+            del head_time_stamp[fname]
+
+    head_sec_fnames = list(head_sec.keys())
+    for fname in head_sec_fnames:
+        if 'spare' in fname:
+            del head_sec[fname]
+
+    # Create complex IQ streams
+    ais_ch0_pol_H, ais_ch0_pol_V, ais_ch1_pol_H, ais_ch1_pol_V, ais_ch2_pol_H, ais_ch2_pol_V, ais_ch3_pol_H, ais_ch3_pol_V = parse_ais_user_data(head_sec, user_data_bin)
+
+    # times stamp in decimal
+    time_bits = 2.0 ** np.arange(31, -14, -1)
+    array = np.array([list(format(time, '045b')) for time in head_time_stamp['sc_pps_time']])
+    array = array.astype(int)
+    head_time_dec = np.sum(array * time_bits, axis=1)
+
+    # Check for decoding correctness
+    if np.any(head_pri['apid'] != 7):
+        print('Possible reading error. Application Process Identifier (APID) is not equal to 0x007')
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
