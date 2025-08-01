@@ -24,7 +24,7 @@ python process_s1_ais_raw.py ./Testcase/S1C_AI_RAW__0____20220531T155630_2022053
 The expected output can be found in the directory `/Testcase/output`. Note: for the specific testcase no detections are expected to be demodulated from the H-V input channel.
 
 ### Outputs include:
-- Extracted ISP headers and de-interleaved raw data (.wav)
+- Extracted ISP headers and de-interleaved raw data (.asc)
 - Decoded AIS messages, named: `S1C_AI_L1_YYYYMMDDTHHMM_YYYYMMDDTHHMM.txt`
 - Binary detections from each AIS channel
 - Summary report with statistics for each input stream
@@ -46,7 +46,7 @@ This will generate the _AIS_receiver_ executable used by the Python script. Note
 The compiled ESA AIS receiver can also be run independently from the Python script for a single channel as follows:
 
 ``` bash
-./AIS_receiver <data_len> <outputFile> <inputWavfile>
+./AIS_receiver <data_len> <outputFile> <input .asc file>
 ```
 
 Input parameters are defined as follows:
@@ -55,7 +55,7 @@ Input parameters are defined as follows:
 |------------------|----------------------------------------------------------------------------------------------------|
 | `<data_len>`     | AIS message bit length: `168` for heritage AIS Channels (162 MHz) or `96` for SAT-AIS Channels (156 MHz) |
 | `<outputFile>`   | Output directory and filename (with `.txt` extension) where the AIS detections will be saved            |
-| `<inputWavfile>` | Input two-channel WAV file containing the raw IQ AIS data sampled at 28.8 kHz                 |
+| `<input .asc file>` | Input .asc file containing the raw IQ AIS data sampled at 28.8 kHz (real image)                |
 
 
 \
@@ -71,15 +71,7 @@ The executable loads the following files which must be present in the main direc
 
 
 ## Python Dependencies:
-The following Python packages are required to run the Sentinel-1 AIS processor:
-```
-bitarray==2.9.2
-numpy==2.3.1
-pandas==2.3.0
-pyais==2.6.5
-scipy==1.16.0
-shapely==2.0.4
-```
+
 To install all dependencies, run:
 ```bash
 pip install -r requirements.txt
