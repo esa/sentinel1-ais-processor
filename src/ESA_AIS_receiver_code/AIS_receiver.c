@@ -371,25 +371,25 @@ void *process_ais_channel(void *arg)
 
 int main(int argc, char **argv)
 {
-	int num_threads = 2;
+	// int num_threads = 2;
 	int num_inputs = argc;
 	int num_files = (num_inputs - 2) / 2;
 
-	ProcessAISChannelArgs args[num_threads];
-	pthread_t threads[num_threads];
+	ProcessAISChannelArgs args[num_files];
+	pthread_t threads[num_files];
 
-	for (int i = 0; i < num_threads; i++)
+	for (int i = 0; i < num_files; i++)
 	{
 		args[i].output_path = argv[1];
 	}
 
-	for (int i = 0; i < num_threads; i++)
+	for (int i = 0; i < num_files; i++)
 	{
 		args[i].input_filename = argv[i + 2];
 		args[i].ais_msg_len = atoi(argv[i + num_files + 2]);
 	}
 
-	for (int i = 0; i < num_threads; i++)
+	for (int i = 0; i < num_files; i++)
 	{
 		if (pthread_create(&threads[i], NULL, process_ais_channel, &args[i]) != 0)
 		{
@@ -398,7 +398,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	for (int i = 0; i < num_threads; i++)
+	for (int i = 0; i < num_files; i++)
 	{
 		pthread_join(threads[i], NULL);
 	}
