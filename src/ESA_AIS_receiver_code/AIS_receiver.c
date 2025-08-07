@@ -277,7 +277,7 @@ void *process_ais_channel(void *arg)
 		exit(0);
 	}
 
-	clock_t begin = clock();
+	// clock_t begin = clock();
 	while (1)
 	{
 		for (i = 0; i < nr_samples; i++)
@@ -362,24 +362,31 @@ void *process_ais_channel(void *arg)
 	fclose(fd);
 	fclose(saved_detections);
 
-	clock_t end = clock();
-	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-	printf("%i Detections in %f (sec)\n", count, time_spent);
+	// clock_t end = clock();
+	// double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+	// printf("%i Detections in %f (sec)\n", count, time_spent);
 
 	return NULL;
 }
 
 int main(int argc, char **argv)
 {
-	int num_threads = 1;
-	ProcessAISChannelArgs args[num_threads];
+	int num_threads = 2;
+	int num_inputs = argc;
+	int num_files = (num_inputs - 2) / 2;
 
+	ProcessAISChannelArgs args[num_threads];
 	pthread_t threads[num_threads];
+
 	for (int i = 0; i < num_threads; i++)
 	{
 		args[i].output_path = argv[1];
-		args[i].input_filename = argv[2];
-		args[i].ais_msg_len = atoi(argv[3]);
+	}
+
+	for (int i = 0; i < num_threads; i++)
+	{
+		args[i].input_filename = argv[i + 2];
+		args[i].ais_msg_len = atoi(argv[i + num_files + 2]);
 	}
 
 	for (int i = 0; i < num_threads; i++)
