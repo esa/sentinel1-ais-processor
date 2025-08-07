@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 /////////////////////////////////////////////////////////////////////////
 // File: AIS_subroutines.c
 // Author: Tommaso Foggi
@@ -42,6 +42,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stddef.h> // for size_t
+
 /////////////////////////////////////////////////////////////////////////
 // #CGS_2.7 added parameters with error values read from .dat files
 int ais_receiver(

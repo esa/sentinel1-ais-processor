@@ -39,24 +39,13 @@
 
 #include "AIS_subroutines.h" //#CGS_2.4
 #include <time.h>
+#include <pthread.h>
 
-// Define the WAV file header structure
-typedef struct
-{
-	char chunkId[4];
-	uint32_t chunkSize;
-	char format[4];
-	char subchunk1Id[4];
-	uint32_t subchunk1Size;
-	uint16_t audioFormat;
-	uint16_t numChannels;
-	uint32_t sampleRate;
-	uint32_t byteRate;
-	uint16_t blockAlign;
-	uint16_t bitsPerSample;
-	char subchunk2Id[4];
-	uint32_t subchunk2Size;
-} WavHeader;
+#include <libgen.h> // for basename()
+#include <limits.h> // for PATH_MAX
+
+// void process_ais_channel(data_len, output_dir, inputfile) {}
+// change argv to one file and Dir.. input..
 
 int main(int argc, char **argv)
 {
@@ -126,7 +115,7 @@ int main(int argc, char **argv)
 
 	// Support variables
 	FILE *fd;
-	FILE *databit;
+	FILE *saved_detections;
 	float f1;
 	float f2;
 	int ret_eof; // return_end of file
@@ -140,7 +129,7 @@ int main(int argc, char **argv)
 	{
 		printf("Not enough parameters\n");
 		printf("Use\n");
-		printf("AIS_receiver <data_len> <outputFile> <inputWavfile>\n");
+		printf("AIS_receiver <data_len> <outputDir> <input_file.asc>\n");
 		exit(0);
 	}
 
@@ -239,6 +228,20 @@ int main(int argc, char **argv)
 		exit(0);
 	}
 
+	// Extract filename without path and without extension
+	char *input_filename = strdup(argv[3]);
+	char *base = basename(input_filename);
+
+	char name_only[PATH_MAX];
+	strncpy(name_only, base, PATH_MAX);
+	char *dot = strrchr(name_only, '.'); // find last dot
+	if (dot != NULL)
+		*dot = '\0'; // remove extension
+
+	// Build full output path: output_dir + "/" + name_only + ".txt"
+	char outputfile[PATH_MAX];
+	snprintf(outputfile, PATH_MAX, "%s/%s.txt", argv[2], name_only);
+
 	// Initialize datain
 	float real, imag;
 	for (i = 0; i < overlap; i++)
@@ -249,8 +252,9 @@ int main(int argc, char **argv)
 	}
 
 	// File to save correctly decoded bits
-	databit = fopen(argv[2], "a");
-	if (databit == NULL)
+	// databit = fopen(argv[2], "a");
+	saved_detections = fopen(outputfile, "a");
+	if (saved_detections == NULL)
 	{
 		printf("Failed to open output file\n");
 		exit(0);
@@ -304,12 +308,12 @@ int main(int argc, char **argv)
 				// Save to csv: Doppler frequency, detection time[s], binary message
 				detection_time = sample_time + (double)(NcR * nMessagePosition);
 
-				fprintf(databit, "%.1lf, %d, ", (fout[0] + fZonalValue) * 9600, (int)detection_time);
+				fprintf(saved_detections, "%.1lf, %d, ", (fout[0] + fZonalValue) * 9600, (int)detection_time);
 				for (i = 0; i < data_len; i++)
 				{
-					fputc(bitout[i] + '0', databit);
+					fputc(bitout[i] + '0', saved_detections);
 				}
-				fprintf(databit, "\n");
+				fprintf(saved_detections, "\n");
 				count = count + 1;
 
 				// Remove Zonal, cancel message and re-detect (Disabled since doesn't improve performance)
@@ -339,7 +343,7 @@ int main(int argc, char **argv)
 	}
 
 	fclose(fd);
-	fclose(databit);
+	fclose(saved_detections);
 
 	clock_t end = clock();
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
