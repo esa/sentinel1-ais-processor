@@ -46,11 +46,24 @@
 
 // void process_ais_channel(data_len, output_dir, inputfile) {}
 // change argv to one file and Dir.. input..
-
-int main(int argc, char **argv)
+typedef struct
 {
+	const char *output_path;
+	const char *input_filename;
+	int ais_msg_len;
+} ProcessAISChannelArgs;
+
+// void process_ais_channel(char **argv)
+void *process_ais_channel(void *arg)
+{
+	ProcessAISChannelArgs *args = (ProcessAISChannelArgs *)arg;
+
+	// printf("datalen %d \n Path: %s \n filename: %s\n",  args->ais_msg_len, args->output_path, args->input_filename);
+
 	const int NcR = 3; // Samples pr symbol
-	const int data_len = atoi(argv[1]);
+	// const int data_len = atoi(argv[1]);
+	const int data_len = args->ais_msg_len;
+	// const int data_len = 168;
 	const int fcs_len = 16;														   // FCS length
 	const int training_len = 24;												   // training sequence length
 	const int flag_len = 8;														   // start/stop flag length
@@ -125,13 +138,13 @@ int main(int argc, char **argv)
 	double sample_time = 0;
 
 	// Check inputs
-	if (argc < 3)
-	{
-		printf("Not enough parameters\n");
-		printf("Use\n");
-		printf("AIS_receiver <data_len> <outputDir> <input_file.asc>\n");
-		exit(0);
-	}
+	// if (argc < 3)
+	//{
+	//	printf("Not enough parameters\n");
+	//	printf("Use\n");
+	//	printf("AIS_receiver <data_len> <outputDir> <input_file.asc>\n");
+	//	exit(0);
+	//}
 
 	if (data_len != 168 && data_len != 96)
 	{
@@ -221,15 +234,18 @@ int main(int argc, char **argv)
 	fclose(fd);
 
 	// open transmitted signal file
-	fd = fopen(argv[3], "rb");
+	// fd = fopen(argv[3], "rb");
+	fd = fopen(args->input_filename, "rb");
 	if (fd == NULL)
 	{
-		printf("%s doesn't exist\n", argv[3]);
+		// printf("%s doesn't exist\n", argv[3]);
+		printf("%s doesn't exist\n", args->input_filename);
 		exit(0);
 	}
 
 	// Extract filename without path and without extension
-	char *input_filename = strdup(argv[3]);
+	// char *input_filename = strdup(argv[3]);
+	char *input_filename = strdup(args->input_filename);
 	char *base = basename(input_filename);
 
 	char name_only[PATH_MAX];
@@ -240,7 +256,8 @@ int main(int argc, char **argv)
 
 	// Build full output path: output_dir + "/" + name_only + ".txt"
 	char outputfile[PATH_MAX];
-	snprintf(outputfile, PATH_MAX, "%s/%s.txt", argv[2], name_only);
+	// snprintf(outputfile, PATH_MAX, "%s/%s.txt", argv[2], name_only);
+	snprintf(outputfile, PATH_MAX, "%s/%s.txt", args->output_path, name_only);
 
 	// Initialize datain
 	float real, imag;
@@ -252,7 +269,7 @@ int main(int argc, char **argv)
 	}
 
 	// File to save correctly decoded bits
-	// databit = fopen(argv[2], "a");
+	// saved_detections = fopen(argv[2], "a");
 	saved_detections = fopen(outputfile, "a");
 	if (saved_detections == NULL)
 	{
@@ -348,5 +365,36 @@ int main(int argc, char **argv)
 	clock_t end = clock();
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 	printf("%i Detections in %f (sec)\n", count, time_spent);
+
+	return NULL;
+}
+
+int main(int argc, char **argv)
+{
+	int num_threads = 1;
+	ProcessAISChannelArgs args[num_threads];
+
+	pthread_t threads[num_threads];
+	for (int i = 0; i < num_threads; i++)
+	{
+		args[i].output_path = argv[1];
+		args[i].input_filename = argv[2];
+		args[i].ais_msg_len = atoi(argv[3]);
+	}
+
+	for (int i = 0; i < num_threads; i++)
+	{
+		if (pthread_create(&threads[i], NULL, process_ais_channel, &args[i]) != 0)
+		{
+			perror("pthread_create");
+			exit(1);
+		}
+	}
+
+	for (int i = 0; i < num_threads; i++)
+	{
+		pthread_join(threads[i], NULL);
+	}
+
 	return 0;
 }
