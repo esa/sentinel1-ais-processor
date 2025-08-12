@@ -308,10 +308,9 @@ def add_quality_flag(filename_ais, annot_file, output_file):
     # Save dataframe to file:
     data_ais.to_csv(output_file, index=False)
     
-    
-    # Print numbuer of invalid AIS messages
-    invalid_count = data_ais[data_ais['quality'] == 2].shape[0]
-    print(f"Number of invalid AIS messages: {invalid_count}")
+    # Print numbuer of AIS messages detected
+    total_count = data_ais.shape[0]
+    print(f"Total number of AIS messages detected: {total_count}")
 
 
 
