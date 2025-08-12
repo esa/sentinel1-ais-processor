@@ -33,6 +33,7 @@ The expected output can be found in the directory `/Testcase/output`. Note: for 
 ## ESA AIS Receiver Subfunction
 
 Demodulation of each AIS channel is based on the ESA-patented algorithm, _Receiving Method And Receiver For Timing And Frequency Offset Correction Of Continuous Phase Demodulation In Satellite-Based Automatic Identification Systems_ (PCT/EP2014/051273).
+The ESA AIS receiver subfunction takes multiple AIS channels (.asc files) as input demodulates them in parallel.
 
 ## Compilation:
 The source code implementing the ESA-patented AIS algorithm is located in the directory _/src/ESA_AIS_receiver_code/_ and can be compiled using the `Makefile` by running:
@@ -46,16 +47,16 @@ This will generate the _AIS_receiver_ executable used by the Python script. Note
 The compiled ESA AIS receiver can also be run independently from the Python script for a single channel as follows:
 
 ``` bash
-./AIS_receiver <data_len> <outputFile> <input .asc file>
+./AIS_receiver_mac <output_path> <input .asc file1>...<input .asc fileN> <data_len1>...<data_len1N>
 ```
 
 Input parameters are defined as follows:
 
 | Parameter        | Description                                                                                          |
 |------------------|----------------------------------------------------------------------------------------------------|
-| `<data_len>`     | AIS message bit length: `168` for heritage AIS Channels (162 MHz) or `96` for SAT-AIS Channels (156 MHz) |
-| `<outputFile>`   | Output directory and filename (with `.txt` extension) where the AIS detections will be saved            |
-| `<input .asc file>` | Input .asc file containing the raw IQ AIS data sampled at 28.8 kHz (real image)                |
+| `<data_len>`     | AIS message bit lengths: `168` for heritage AIS Channels (162 MHz) or `96` for SAT-AIS Channels (156 MHz) |
+| `<output_path>`   | Output directory where the AIS detections (.txt) will be saved            |
+| `<input .asc files>` | Input .asc files containing the raw IQ AIS data sampled at 28.8 kHz (real, image) |
 
 
 \
@@ -68,6 +69,11 @@ The executable loads the following files which must be present in the main direc
 | `<h4.dat>`     | Low-pass filter coefficients (mod. Meng-Mor. frequency estimation) |
 | `<pulse.dat>`  | GMSK pulse coefficients                             |
 | `<error_files>` | Directory containing the syndrome error correction files                              |
+
+### Standalone Execution Example
+``` bash
+./AIS_receiver_mac ./output ais_ch0_pol_H.asc ais_ch3_pol_H.asc 168 96
+```
 
 
 ## Python Dependencies:
