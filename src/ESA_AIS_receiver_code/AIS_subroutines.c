@@ -207,7 +207,7 @@ int ais_receiver(
 			bit_out[i] = detected[detected_position + i];
 		}
 
-		// Successive interference cancellation currently disabled as it doesn't improve performance.
+		// Successive interference cancellation not implemented.
 		// remodulateDetection(data_in, bit_out, detected, diff_dec, pck_len, NcR, detected_frame_len, detected_position,
 		//					M, num_h, p, L, pulse, STFAS, tau, f_out, cCancelMessage);
 
@@ -3403,7 +3403,6 @@ int check_frame_2(int *frame, float *LLRT, int frame_len, int data_len, int max_
 
 loop:;
 
-	// stuffing bits restoration
 	if (res == 1)
 	{
 		for (i = 0; i < data_len + crc_len; i++)

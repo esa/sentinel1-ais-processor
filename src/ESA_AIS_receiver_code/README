@@ -1,15 +1,16 @@
 
 AIS_receiver - executable:
-Performs the demodulation and detection for a single channel raw AIS data.
+Performs the demodulation and detection for multiple AIS channels in parallel.
 Initially developed under TEC-ESC and adapted to the Sentinel-1 data.
 Ref: G. Colavolpe, T. Foggi, A. Ugolini, J. Lizarraga, S. Cioni and A. Ginesi, "A highly efficient receiver for satellite-based Automatic Identification System signal detection," 2014
 
 Executed as:
-./AIS_receiver <data_len> <outputFile> <inputWavfile>
+./AIS_receiver <output_directory> <input .asc file1>...<input .asc fileN> <data_len1>....<data_lenN>
 Where	
-	<data_len>  168 for heritage AIS Channels and 96 for SAT AIS Channels
-	<outputFile> Output directory and txt file to save AIS detections
-	<inputWavfile> Two channel Wav file containing the RAW complex AIS data sampled at 9600*3
+//	 <output_directory> Output directory where output .txt files will be saved.
+//	 <input .asc files> text files containing the RAW (real, image)  AIS data sampled at 9600*3
+//   <data_lens>  Expected bit length for the channel to process. 168 for heritage AIS Channels and 96 for SAT AIS Channels
+//
 The executable loads the following files:
 //   <h1_file> low-pass filter description file
 //   <h2_file> matched-filter description file: oversampled filter matched to the principal pulse of the Laurent decomposition
@@ -22,6 +23,6 @@ The source code is located in the folder '/src/ESA_AIS_receiver_code/'
 #############################################
 
 Testcase:
-./AIS_receiver 168 ch0_testcase_result.txt ch0_testcase.wav
+./AIS_receiver ./outputdir /ch0_testcase.asc 168
 
 Result: Should take around 34 seconds and generate the file ch0_testcase_result.txt with the binary message detections.

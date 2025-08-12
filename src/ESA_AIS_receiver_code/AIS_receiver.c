@@ -22,10 +22,10 @@
 //   OF CONTINUOUS PHASE DEMODULATION IN SATELLITE-BASED AUTOMATIC
 //   IDENTIFICATION SYSTEMS
 // Use:
-//   <executable> <data_len> <outputFile> <inputWavfile>
-//   <data_len>  168 for heritage AIS Channels and 96 for SAT AIS Channels
-//	 <outputFile> Output directory and txt file to save AIS detections
-//	 <inputWavfile> Two channel Wav file containing the RAW complex AIS data sampled at 9600*3
+//   <executable> <output_directory> <input .asc file1>...<input .asc fileN> <data_len1>....<data_lenN>
+//	 <output_directory> Output directory where output .txt files will be saved.
+//	 <input .asc file> text file (real, image) containing the RAW AIS data sampled at 9600*3
+//   <data_len>  Expected bit length for the channel to process. 168 for heritage AIS Channels and 96 for SAT AIS Channels
 //
 // Files loaded by executable:
 //   <h1_file> low-pass filter description file
@@ -40,12 +40,9 @@
 #include "AIS_subroutines.h" //#CGS_2.4
 #include <time.h>
 #include <pthread.h>
-
 #include <libgen.h> // for basename()
 #include <limits.h> // for PATH_MAX
 
-// void process_ais_channel(data_len, output_dir, inputfile) {}
-// change argv to one file and Dir.. input..
 typedef struct
 {
 	const char *output_path;
@@ -53,17 +50,13 @@ typedef struct
 	int ais_msg_len;
 } ProcessAISChannelArgs;
 
-// void process_ais_channel(char **argv)
 void *process_ais_channel(void *arg)
 {
 	ProcessAISChannelArgs *args = (ProcessAISChannelArgs *)arg;
 
-	// printf("datalen %d \n Path: %s \n filename: %s\n",  args->ais_msg_len, args->output_path, args->input_filename);
-
 	const int NcR = 3; // Samples pr symbol
 	// const int data_len = atoi(argv[1]);
 	const int data_len = args->ais_msg_len;
-	// const int data_len = 168;
 	const int fcs_len = 16;														   // FCS length
 	const int training_len = 24;												   // training sequence length
 	const int flag_len = 8;														   // start/stop flag length
@@ -136,15 +129,6 @@ void *process_ais_channel(void *arg)
 	int count = 0;
 	int iteration_nr = 0;
 	double sample_time = 0;
-
-	// Check inputs
-	// if (argc < 3)
-	//{
-	//	printf("Not enough parameters\n");
-	//	printf("Use\n");
-	//	printf("AIS_receiver <data_len> <outputDir> <input_file.asc>\n");
-	//	exit(0);
-	//}
 
 	if (data_len != 168 && data_len != 96)
 	{
@@ -362,18 +346,22 @@ void *process_ais_channel(void *arg)
 	fclose(fd);
 	fclose(saved_detections);
 
-	// clock_t end = clock();
-	// double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-	// printf("%i Detections in %f (sec)\n", count, time_spent);
-
 	return NULL;
 }
 
 int main(int argc, char **argv)
 {
-	// int num_threads = 2;
 	int num_inputs = argc;
 	int num_files = (num_inputs - 2) / 2;
+
+	// Check inputs
+	if (argc < 3)
+	{
+		printf("Not enough parameters\n");
+		printf("Usage:\n");
+		printf("AIS_receiver <output_directory> <input .asc file1>...<input .asc fileN> <data_len1>....<data_lenN>\n");
+		exit(0);
+	}
 
 	ProcessAISChannelArgs args[num_files];
 	pthread_t threads[num_files];
