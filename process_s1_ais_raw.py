@@ -54,12 +54,9 @@ from isp_extraction import extract_isp2asc
     
     
     
-def process_channel(args):
+def process_ais_channels(output_dir, input_files, datalen_list):
     
-    # process_channel calls the ESA AIS demodulation C-executable with input .wav files
-    k, input_dir, output_dir, wav_name = args
-    filename_in = os.path.join(input_dir, f"{wav_name}.asc")
-    filename_out = os.path.join(output_dir, f"{wav_name}.txt")
+    # process_channel calls the ESA AIS demodulation C-executable with input .asc fileslist
     
     if platform.system() == "Windows":
         esa_ais_executable = "AIS_receiver_win.exe"
@@ -72,9 +69,8 @@ def process_channel(args):
         raise RuntimeError("Unsupported OS")
         
     # Call executable from command line
-    # The files from k = 8 to 16 are the sat-AIS channels with message lengths 96 bits.
-    #command = ['./AIS_receiver', '168' if k < 8 else '96', filename_out, filename_in]
-    command = [esa_ais_executable, '168' if k < 8 else '96', filename_out, filename_in]
+    #command = [esa_ais_executable, output_dir, input_files[0], input_files[1], datalen_list[0], datalen_list[1]]
+    command = [esa_ais_executable, output_dir] + input_files + datalen_list
     subprocess.run(command)
     
 
@@ -105,22 +101,24 @@ def demodulate_all_ais_channels(sInputDir, sOutputDir):
     # Extract the Instrument Source Packets (ISPs) into .wav files for further processing
     extract_isp2asc(sInputDir, filename, sOutputDir, isp_idx = [0,10E10])
     
-    # ESA AIS Demodulation
-    fieldnames = ["ais_ch0_pol_H", "ais_ch0_pol_V", "ais_ch0_pol_HV", "ais_ch0_pol_HmV",
-                  "ais_ch1_pol_H", "ais_ch1_pol_V", "ais_ch1_pol_HV", "ais_ch1_pol_HmV",
-                  "ais_ch2_pol_H", "ais_ch2_pol_V", "ais_ch2_pol_HV", "ais_ch2_pol_HmV",
-                  "ais_ch3_pol_H", "ais_ch3_pol_V", "ais_ch3_pol_HV", "ais_ch3_pol_HmV"]
-    
-    
+
+
     # Define the directory where to load the .asc files to the ESA demodulator.
     # In this case it is the output directory from previous step where the .wav files have been saved.
+    filename_list = ["ais_ch0_pol_H.asc", "ais_ch0_pol_V.asc", "ais_ch0_pol_HV.asc", "ais_ch0_pol_HmV.asc",
+                  "ais_ch1_pol_H.asc", "ais_ch1_pol_V.asc", "ais_ch1_pol_HV.asc", "ais_ch1_pol_HmV.asc",
+                  "ais_ch2_pol_H.asc", "ais_ch2_pol_V.asc", "ais_ch2_pol_HV.asc", "ais_ch2_pol_HmV.asc",
+                  "ais_ch3_pol_H.asc", "ais_ch3_pol_V.asc", "ais_ch3_pol_HV.asc", "ais_ch3_pol_HmV.asc"]
     sInputDir = sOutputDir
+    input_files = [os.path.join(sInputDir, fname) for fname in filename_list]
     
-    # Paralle processing of AIS channels including the linear polarization combinations
-    start_time = time.time()
-    with Pool() as pool:
-        pool.map(process_channel, [(k, sInputDir, sOutputDir, fieldnames[k]) for k in range(16)])
+    # Define AIS message bit-length for each channel to process.
+    datalen_list = ['168', '168', '168', '168', '168', '168', '168', '168',
+                    '96', '96', '96', '96', '96', '96', '96', '96']
 
+    # Processe all input AIS channels including the linear polarization combinations
+    start_time = time.time()
+    process_ais_channels(sOutputDir, input_files, datalen_list)
     end_time = time.time()
     elapsed_time = end_time - start_time
     
