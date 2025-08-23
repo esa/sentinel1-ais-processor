@@ -60,11 +60,9 @@ def process_ais_channels(output_dir, input_files, datalen_list):
     
     if platform.system() == "Windows":
         esa_ais_executable = "AIS_receiver_win.exe"
+		RuntimeError("Unsupported OS")
     elif platform.system() == "Linux":
         esa_ais_executable = './AIS_receiver_linux'
-        RuntimeError("Unsupported OS")
-        break
-        
     elif platform.system() == "Darwin":
         esa_ais_executable = './AIS_receiver_mac'
     else:
