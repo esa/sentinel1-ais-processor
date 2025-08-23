@@ -1,9 +1,0 @@
-Detections statistics for: ais_ch2
-Detected messages in H pol: 161
-Total messages in V pol: 161
-Total messages in H + V pol: 161
-Total messages in H - V pol: 0
-Total number of unique messages detected: 161
-Total number of unique ship IDs (MMSI): 161
-Total number of invald message types discarded: 0
-=================================================================
