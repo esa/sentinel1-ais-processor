@@ -1,6 +1,6 @@
 CC = gcc
 #CFLAGS = -O2 -Wall # Shows all warnings
-LDFLAGS = -lm
+LDFLAGS = -lm -pthread
 
 SRC = AIS_receiver.c AIS_subroutines.c
 OBJ = $(SRC:.c=.o)
