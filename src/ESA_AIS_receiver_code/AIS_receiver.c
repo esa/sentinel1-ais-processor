@@ -46,23 +46,20 @@
 
 typedef struct
 {
-	// const char *output_path;
 	const char *input_filename;
 	int ais_msg_len;
 } ProcessAISChannelArgs;
-
-const char *output_path;
 
 #define MAX_FILES 100
 ProcessAISChannelArgs input_args[MAX_FILES];
 int num_files;
 int next_file = 0;
+const char *output_path;
 
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 void *process_ais_channel(void *arg)
 {
-
 	int tid = *(int *)arg;
 	free(arg);
 
@@ -77,20 +74,10 @@ void *process_ais_channel(void *arg)
 		}
 
 		int current_file = next_file++;
-		// Process the task
-		printf("Thread %d processing: input=%s, len=%d\n",
-			   tid,
-			   input_args[current_file].input_filename,
-			   // input_args[current_file].output_path,
-			   input_args[current_file].ais_msg_len);
 
 		pthread_mutex_unlock(&lock);
 
-		// ProcessAISChannelArgs *args = (ProcessAISChannelArgs *)arg;
-
 		const int NcR = 3; // Samples pr symbol
-		// const int data_len = atoi(argv[1]);
-		// const int data_len = args->ais_msg_len;
 		const int data_len = input_args[current_file].ais_msg_len;
 		const int fcs_len = 16;														   // FCS length
 		const int training_len = 24;												   // training sequence length
@@ -107,10 +94,7 @@ void *process_ais_channel(void *arg)
 		const int pck_len = (overlap + nr_samples) / NcR; // AIS package length
 		const int Nsimb = 2;
 		const int lung = 6; // matched filter length, expressed as number of symbol periods
-		// const int M = 2;	 // constellation order
-		// const int num_h = 1; // modulation index's numerator
-		// const int p = 2;	 // modulation index's denominator
-		const int L = 3; // frequency pulse length
+		const int L = 3;	// frequency pulse length
 
 		int nMessagePosition;
 		double complex cCancelSingleMsg[pck_len * NcR];
@@ -172,7 +156,7 @@ void *process_ais_channel(void *arg)
 		}
 
 		// Frequency shift of each zonal demodulator
-		float fZonalValue; // #CGS_2.4
+		float fZonalValue;
 		float ZonalArray[] = {-0.33, 0, 0.33};
 		// float ZonalArray[] = {-0.42, 0, 0.42};
 		int nrZonals = sizeof(ZonalArray) / sizeof(ZonalArray[0]);
@@ -258,15 +242,11 @@ void *process_ais_channel(void *arg)
 		fd = fopen(input_args[current_file].input_filename, "rb");
 		if (fd == NULL)
 		{
-			// printf("%s doesn't exist\n", argv[3]);
-			// printf("%s doesn't exist\n", args->input_filename);
 			printf("%s doesn't exist\n", input_args[current_file].input_filename);
 			exit(0);
 		}
 
 		// Extract filename without path and without extension
-		// char *input_filename = strdup(argv[3]);
-		// char *input_filename = strdup(args->input_filename);
 		char *input_filename = strdup(input_args[current_file].input_filename);
 		char *base = basename(input_filename);
 
@@ -278,9 +258,6 @@ void *process_ais_channel(void *arg)
 
 		// Build full output path: output_dir + "/" + name_only + ".txt"
 		char outputfile[PATH_MAX];
-		// snprintf(outputfile, PATH_MAX, "%s/%s.txt", argv[2], name_only);
-		// snprintf(outputfile, PATH_MAX, "%s/%s.txt", args->output_path, name_only);
-		// snprintf(outputfile, PATH_MAX, "%s/%s.txt", input_args[current_file].output_path, name_only);
 		snprintf(outputfile, PATH_MAX, "%s/%s.txt", output_path, name_only);
 
 		// Initialize datain
@@ -293,7 +270,6 @@ void *process_ais_channel(void *arg)
 		}
 
 		// File to save correctly decoded bits
-		// saved_detections = fopen(argv[2], "a");
 		saved_detections = fopen(outputfile, "a");
 		if (saved_detections == NULL)
 		{
@@ -301,7 +277,6 @@ void *process_ais_channel(void *arg)
 			exit(0);
 		}
 
-		// clock_t begin = clock();
 		while (1)
 		{
 			for (i = 0; i < nr_samples; i++)
@@ -399,14 +374,8 @@ int main(int argc, char **argv)
 		exit(0);
 	}
 
-	// ProcessAISChannelArgs args[num_files];
 	pthread_t threads[num_threads];
 	pthread_mutex_init(&lock, NULL);
-
-	// for (int i = 0; i < num_files; i++)
-	//{
-	//	input_args[i].output_path = argv[1];
-	// }
 	output_path = argv[1];
 
 	for (int i = 0; i < num_files; i++)
