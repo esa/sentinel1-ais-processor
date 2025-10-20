@@ -28,8 +28,8 @@ Change log:
     - In read_bin_ais() updated concatenation to end at  isp_cont instead of isp_cont-1
         e.g. user_data_bin = user_data_bin[:isp_cont]
     - In parse_ais_user_data(): Updated the loop to use append instead of indexing into empty array.
-
-
+    20th Oct 2025
+    - Added additional checks on the packet headers in s1_read_ais_bin and parse_ais_user_data
 """
 
 from scipy.io import wavfile
@@ -365,9 +365,16 @@ def parse_ais_user_data(head_sec, user_data_bin):
     # Author: Stefan Graham
 
     # Check that all four channels are active
-    if any(head_sec['ch'] != 15):
-        print('READING ERROR: Error in the number of Channels')
-        return
+    # Check that all four channels are active
+    if not np.all(head_sec['ch'] == 15):
+        # Check if only the last entry is invalid
+        if np.all(head_sec['ch'][:-1] == 15):
+            print("WARNING: Last channel entry is corrupted. Truncating input.")
+            # Truncate all relevant inputs
+            user_data_bin = user_data_bin[:-1]
+        else:
+            print('READING ERROR: Error in the number of Channels')
+            return
     
     ais_ch0_pol_H_list = []
     ais_ch0_pol_V_list = []
@@ -452,9 +459,6 @@ def s1_read_ais_bin(path_bin, isp_idx=None):
         if 'spare' in fname:
             del head_sec[fname]
 
-    # Create complex IQ streams
-    ais_ch0_pol_H, ais_ch0_pol_V, ais_ch1_pol_H, ais_ch1_pol_V, ais_ch2_pol_H, ais_ch2_pol_V, ais_ch3_pol_H, ais_ch3_pol_V = parse_ais_user_data(head_sec, user_data_bin)
-
     # times stamp in decimal
     time_bits = 2.0 ** np.arange(31, -14, -1)
     array = np.array([list(format(time, '045b')) for time in head_time_stamp['sc_pps_time']])
@@ -462,8 +466,22 @@ def s1_read_ais_bin(path_bin, isp_idx=None):
     head_time_dec = np.sum(array * time_bits, axis=1)
 
     # Check for decoding correctness
-    if np.any(head_pri['apid'] != 7):
-        print('Possible reading error. Application Process Identifier (APID) is not equal to 0x007')
+    if np.any(head_ccsds['apid'][-1] != 100):
+        # Check if only the last entry is invalid
+        if np.all(head_ccsds['apid'][:-1] == 100):
+            print("WARNING: Last ISP is NOT AIS. Truncating input.")
+            # Truncate all relevant inputs (assumes aligned arrays)
+            head_ccsds = {key: val[:-1] for key, val in head_ccsds.items()}
+            head_time_dec = head_time_dec[:-1]
+            head_pri = {key: val[:-1] for key, val in head_pri.items()}
+            head_sec = {key: val[:-1] for key, val in head_sec.items()}
+            user_data_bin = user_data_bin[:-1]
+        else:
+            print('Possible reading error. Application Process Identifier (APID) incorrect')
+            return
+        
+    # Create complex IQ streams
+    ais_ch0_pol_H, ais_ch0_pol_V, ais_ch1_pol_H, ais_ch1_pol_V, ais_ch2_pol_H, ais_ch2_pol_V, ais_ch3_pol_H, ais_ch3_pol_V = parse_ais_user_data(head_sec, user_data_bin)
 
     return head_ccsds, head_time_dec, head_pri, head_sec, ais_ch0_pol_H, ais_ch0_pol_V, ais_ch1_pol_H, ais_ch1_pol_V, ais_ch2_pol_H, ais_ch2_pol_V, ais_ch3_pol_H, ais_ch3_pol_V
 

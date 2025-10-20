@@ -32,6 +32,9 @@ Change log:
     - Updated toolbox to be executed from the command line
     20th Jan 2025
     - Added check to ensure that *_detections.txt exist before merge_ais_channels()
+    20th Oct 2025
+    - Add ValueError in case of no detections (e.g. for the short test case). 
+    - Updated package imports from src
 """
 
 import os
@@ -44,12 +47,14 @@ import platform
 
 # Add paths to Python's sys.path
 import sys
-sys.path.append(os.path.join(os.getcwd(), 'src'))
-
+#sys.path.append(os.path.join(os.getcwd(), 'src'))
 
 # Import custom packages from src
-from parse_ais import decode_binary_ais_messages, merge_ais_channels, generate_file_name, add_quality_flag
-from isp_extraction import extract_isp2asc
+#from parse_ais import decode_binary_ais_messages, merge_ais_channels, generate_file_name, add_quality_flag
+#from isp_extraction import extract_isp2asc
+
+from src.parse_ais import decode_binary_ais_messages, merge_ais_channels, generate_file_name, add_quality_flag
+from src.isp_extraction import extract_isp2asc
 
     
     
