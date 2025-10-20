@@ -260,12 +260,14 @@ def merge_ais_channels(filelist, output_filename, output_directory):
     
     # Concatenate all non-empty DataFrames into a single DataFrame
     non_empty_dataframes = [df for df in all_messages if not df.empty]
-    all_messages = pd.concat(non_empty_dataframes, ignore_index=True)
-    all_messages = all_messages.sort_values(by='time_utc')
+    if non_empty_dataframes:
+        all_messages = pd.concat(non_empty_dataframes, ignore_index=True)
+        all_messages = all_messages.sort_values(by='time_utc')
+        all_messages.to_csv(os.path.join(output_directory, output_filename), index=False)    
+    else:
+        raise ValueError("No AIS messages detected")
     
-    all_messages.to_csv(os.path.join(output_directory, output_filename), index=False)
-    
-
+ 
 def generate_file_name(InputTimestamps):
     
     timestamps = np.loadtxt(InputTimestamps)
@@ -279,6 +281,7 @@ def generate_file_name(InputTimestamps):
 def add_quality_flag(filename_ais, annot_file, output_file):
     
     data_ais = pd.read_csv(filename_ais)
+
     tree = ET.parse(annot_file)
     root = tree.getroot()
     
@@ -289,10 +292,8 @@ def add_quality_flag(filename_ais, annot_file, output_file):
     coordinates = [tuple(map(float, coord.split(','))) for coord in coordinates_text.split()]
     lats, lons = zip(*coordinates)
 
-
     # Create a Polygon object of the Field of View (FoV)
     polygon = Polygon(coordinates)
-
 
     # Function to check if the AIS message is within the FoV
     def is_within_polygon(row):

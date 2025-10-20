@@ -16,12 +16,20 @@ python process_s1_ais_raw.py <input_folder> -o <output_folder>
 `<input_folder>`: Path to the Sentinel-1 AIS SAFE folder containing the binary `.dat` file.\
 `<output_folder>`: Path where the processed output files will be saved.
 
-#### Example test case:
-The `/Testcase/` folder contains a simulated AIS dataset in Sentinel-1 ISP format. To run the script on this test data, use:
+#### Example test cases:
+The `/tests/` folder contains two simulated AIS datasets in Sentinel-1 ISP format. The first dataset contains a short test with only 2 ISPs and should take a few seconds to run. The run the scripts on this test data, use:
+
 ```bash
-python process_s1_ais_raw.py ./Testcase/S1C_AI_RAW__0____20220531T155630_20220531T155744_000016________2D48.SAFE/ -o ./Testcase/output
+python process_s1_ais_raw.py ./tests/S1C_AI_SHORT.SAFE/ -o ./tests/output_short
 ```
-The expected output can be found in the directory `/Testcase/output`. Note: for the specific testcase no detections are expected to be demodulated from the H-V input channel.
+No detection are expected at the output of this test dataset.
+The second test contains a longer dataset, which will take a couple minutes to run.
+
+```bash
+python process_s1_ais_raw.py ./tests/S1C_AI_RAW__0____20220531T155630_20220531T155744_000016________2D48.SAFE/ -o ./tests/output
+```
+The expected output can be found in the directory `/tests/output`. Note: for the specific testcase no detections are expected to be demodulated from the H-V input channel.
+
 
 ### Outputs include:
 - Extracted ISP headers and de-interleaved raw data (.asc)

@@ -97,7 +97,7 @@ def demodulate_all_ais_channels(sInputDir, sOutputDir):
     filename = find_input_dat_file(sInputDir)
 
     # Input manifest.safe file containing the AIS/SAR Field of view polygon.
-    mainfest_l0 =   os.path.join(sInputDir, 'manifest.safe')
+    mainifest_l0 =   os.path.join(sInputDir, 'manifest.safe')
 
     # Extract the Instrument Source Packets (ISPs) into .wav files for further processing
     extract_isp2asc(sInputDir, filename, sOutputDir, isp_idx = [0,10E10])
@@ -161,7 +161,7 @@ def demodulate_all_ais_channels(sInputDir, sOutputDir):
     try:
         # Output file overides the previous output from 'merge_ais_channels'
         file_out =  os.path.join(sInputDir, l1_filename)
-        add_quality_flag(os.path.join(sInputDir, l1_filename), mainfest_l0, file_out)
+        add_quality_flag(os.path.join(sInputDir, l1_filename), mainifest_l0, file_out)
     except NameError:
         print("Quality Flag NOT added.")
 
