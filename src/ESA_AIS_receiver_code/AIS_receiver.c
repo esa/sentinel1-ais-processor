@@ -44,6 +44,21 @@
 #include <limits.h> // for PATH_MAX
 #include <unistd.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
+
+int get_num_cores() {
+#ifdef _WIN32
+    SYSTEM_INFO sysinfo;
+    GetSystemInfo(&sysinfo);
+    return sysinfo.dwNumberOfProcessors;
+#else
+    return sysconf(_SC_NPROCESSORS_ONLN);
+#endif
+}
+
 typedef struct
 {
 	const char *input_filename;
@@ -360,7 +375,8 @@ int main(int argc, char **argv)
 {
 	int num_inputs = argc;
 	num_files = (num_inputs - 2) / 2;
-	int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
+	//int num_cores = sysconf(_SC_NPROCESSORS_ONLN);
+	int num_cores = get_num_cores();
 
 	// Determine number of threads based on MIN(number of cores, number of files).
 	int num_threads = (num_cores < num_files) ? num_cores : num_files;
