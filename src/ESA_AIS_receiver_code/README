@@ -26,3 +26,21 @@ Testcase:
 ./AIS_receiver ./outputdir /ch0_testcase.asc 168
 
 Result: Should take around 34 seconds and generate the file ch0_testcase_result.txt with the binary message detections.
+
+To compile on MacOS, run:
+
+make
+
+
+To compile on Windows use the MSYS Mingw64 terminal:
+Install the compiler
+pacman -S mingw-w64-x86_64-gcc
+
+Install make:
+pacman -S make
+
+Ensure that libwinpthread-1.dll is installed in the path or just copy it into the directory where it will be compiling.
+Then from the ESA_AIS_receiver_code directory run:
+make
+Using the windows Makefile_win file
+Some warnings will occur, but these are expected.
