@@ -164,7 +164,7 @@ def demodulate_all_ais_channels(sInputDir, sOutputDir):
     # Add quality flag using the Sentinel-1 AIS/SAR Field of View polygon
     # Only performed if the L0 manifest file is loaded
     try:
-        # Output file overides the previous output from 'merge_ais_channels'
+        # Output file overrides the previous output from 'merge_ais_channels'
         file_out =  os.path.join(sInputDir, l1_filename)
         add_quality_flag(os.path.join(sInputDir, l1_filename), mainifest_l0, file_out)
     except NameError:

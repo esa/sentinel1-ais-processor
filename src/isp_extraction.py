@@ -17,14 +17,14 @@ Created on Tue Mar  5 11:45:03 2024
 
 @author: stefan.graham
 
-Functions to extract raw samples from the Sentinel-1C AIS Instrument Soruce Packets(ISPs)
+Functions to extract raw samples from the Sentinel-1C AIS Instrument Source Packets(ISPs)
 AIS ISP structure reference:
     S1CD-RD-TAI-PM18-0123
     
 
 Change log:
     20th Jan 2025
-    - In extract_isp_data(): Chaned isp_idx = [0, int(1E10)] to start at 0 instead of 1:
+    - In extract_isp_data(): Channel isp_idx = [0, int(1E10)] to start at 0 instead of 1:
     - In read_bin_ais() updated concatenation to end at  isp_cont instead of isp_cont-1
         e.g. user_data_bin = user_data_bin[:isp_cont]
     - In parse_ais_user_data(): Updated the loop to use append instead of indexing into empty array.

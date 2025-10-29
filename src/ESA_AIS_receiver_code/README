@@ -13,7 +13,7 @@ Where
 //
 The executable loads the following files:
 //   <h1_file> low-pass filter description file
-//   <h2_file> matched-filter description file: oversampled filter matched to the principal pulse of the Laurent decomposition
+//   <h2_file> matched-filter description file: over sampled filter matched to the principal pulse of the Laurent decomposition
 //   <h3_file> low-pass filter(zonal) description file
 //   <h4_file> low-pass filter(mod.Meng.Mor. frequency estim.) description file
 //   <pulse_file> pulse description file

@@ -42,8 +42,8 @@ Change log:
         * Added check to ensure that the dataframes are not empty before concatenation
         non_empty_dataframes = [df for df in all_messages if not df.empty]
     - Reversed Lat lon value in cleanse_AIS()
-    - Added initialisation of: all_detections = []
-    - Added additional checks to Parse_AIS() incase the dataframe is empty
+    - Added initialization of: all_detections = []
+    - Added additional checks to Parse_AIS() in case the dataframe is empty
     - Replaced exception handling with if statement to only process messages 0-27 (excluding type 24)
 
 """
