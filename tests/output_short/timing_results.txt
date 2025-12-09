@@ -1,2 +1,0 @@
-File name: /Users/stefan.graham/Library/CloudStorage/OneDrive-ESA/Dokumenter/IOC_Processing/Code/sentinel1-ais-processor/tests/S1C_AI_SHORT.SAFE/s1c-ai-raw_two_isps.dat
-Total time for parallel demodulation: 0.02 seconds
