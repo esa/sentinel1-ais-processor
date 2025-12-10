@@ -1,1 +1,1 @@
-Total time for parallel demodulation: 160.18 seconds
+Total time for parallel demodulation: 160.2 seconds
