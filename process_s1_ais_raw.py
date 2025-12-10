@@ -24,7 +24,7 @@ Outputs include:
 - Extracted headers and raw data (.wav)
 - .txt file with all detected AIS messages with the naming convention _S1C_AI_L1_YYYYMMDDTHHMM_YYYYMMDDTHHMM.txt
 -	Detection statistics for each input stream as a .txt file
--	Text file with potentialially invalid messages.
+-	Text file with potentially invalid messages.
 #############################################
 Change log:
     30th Jun 2025
@@ -45,14 +45,7 @@ import argparse
 import glob
 import platform
 
-# Add paths to Python's sys.path
 import sys
-#sys.path.append(os.path.join(os.getcwd(), 'src'))
-
-# Import custom packages from src
-#from parse_ais import decode_binary_ais_messages, merge_ais_channels, generate_file_name, add_quality_flag
-#from isp_extraction import extract_isp2asc
-
 from src.parse_ais import decode_binary_ais_messages, merge_ais_channels, generate_file_name, add_quality_flag
 from src.isp_extraction import extract_isp2asc
 
@@ -61,7 +54,7 @@ from src.isp_extraction import extract_isp2asc
     
 def process_ais_channels(output_dir, input_files, datalen_list):
     
-    # process_channel calls the ESA AIS demodulation C-executable with input .asc fileslist
+    # process_channel calls the ESA AIS demodulation C-executable with input .asc filelist
     
     if platform.system() == "Windows":
         esa_ais_executable = "AIS_receiver_win.exe"
